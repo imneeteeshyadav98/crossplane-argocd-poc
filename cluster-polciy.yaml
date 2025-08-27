@@ -1,0 +1,21 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: disallow-public-eks-cluster
+spec:
+  validationFailureAction: Audit   # use "Audit" if you only want warnings
+  background: true
+  rules:
+    - name: validate-public-rds
+      match:
+        resources:
+          kinds:
+            - eks.aws.crossplane.io/v1beta1/Cluster
+      validate:
+        message: "EKS must not be publicly accessible and must enable deletion protection."
+        pattern:
+          spec:
+            forProvider:
+              resourcesVpcConfig:
+                endpointPrivateAccess: true
+                endpointPublicAccess: false
