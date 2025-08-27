@@ -1,0 +1,29 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kyverno-crossplane-eks-access
+rules:
+  # Crossplane classic provider: database.aws.crossplane.io/v1beta1 RDSInstance
+  - apiGroups: ["eks.aws.crossplane.io"]
+    resources: ["Cluster"]
+    verbs: ["get", "list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kyverno-crossplane-eks-access-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kyverno-crossplane-eks-access
+subjects:
+  - kind: ServiceAccount
+    name: kyverno
+    namespace: kyverno
+  - kind: ServiceAccount
+    name: kyverno-background-controller
+    namespace: kyverno
+  - kind: ServiceAccount
+    name: kyverno-reports-controller
+    namespace: kyverno
