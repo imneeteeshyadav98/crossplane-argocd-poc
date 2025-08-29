@@ -1,5 +1,5 @@
 providerAws:
-  enabled: false
+  enabled: true
   name: provider-aws
   package: xpkg.upbound.io/crossplane-contrib/provider-aws:v0.54.2
 
