@@ -1,0 +1,43 @@
+{{- if and .Values.kyverno.enabled .Values.kyverno.policy }}
+{{- $deny := .Values.kyverno.policy.useDenyRule | default true -}}
+{{- $action := .Values.kyverno.policy.validationFailureAction | default "Enforce" -}}
+{{- $open := "{{" -}}
+{{- $close := "}}" -}}
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: {{ .Values.kyverno.policy.name }}
+spec:
+  validationFailureAction: {{ $action }}
+  background: true
+  rules:
+    {{- if $deny }}
+    - name: disallow-public-or-no-deletion-protection
+      match:
+        resources:
+          kinds:
+            - database.aws.crossplane.io/v1beta1/RDSInstance
+      deny:
+        conditions:
+          any:
+            - key: "{{ $open }} request.object.spec.forProvider.publiclyAccessible {{ $close }}"
+              operator: Equals
+              value: true
+            - key: "{{ $open }} request.object.spec.forProvider.deletionProtection {{ $close }}"
+              operator: Equals
+              value: false
+    {{- else }}
+    - name: validate-public-rds
+      match:
+        resources:
+          kinds:
+            - database.aws.crossplane.io/v1beta1/RDSInstance
+      validate:
+        message: "requirement not met: RDS must not be publiclyAccessible and must enable deletionProtection."
+        pattern:
+          spec:
+            forProvider:
+              publiclyAccessible: {{ .Values.kyverno.policy.pattern.publiclyAccessible }}
+              deletionProtection: {{ .Values.kyverno.policy.pattern.deletionProtection }}
+    {{- end }}
+{{- end }}

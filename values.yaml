@@ -1,0 +1,47 @@
+providerAws:
+  enabled: false
+  name: provider-aws
+  package: xpkg.upbound.io/crossplane-contrib/provider-aws:v0.54.2
+
+kyverno:
+  enabled: true
+  rbac:
+    clusterRoleName: kyverno-crossplane-rdsinstance-access
+    clusterRoleBindingName: kyverno-crossplane-rdsinstance-access-binding
+    saName: kyverno-reports-controller
+    saNamespace: kyverno
+
+  policy:
+    name: disallow-public-rds
+    validationFailureAction: Enforce  # or Audit
+    # Use a deny rule by default (correctly blocks bad settings).
+    useDenyRule: true
+
+    # If you set useDenyRule: false, we’ll render a validate.pattern rule.
+    # NOTE: pattern below enforces SAFE values (publiclyAccessible: false & deletionProtection: true).
+    # If you want to exactly reproduce your pasted (inverted) pattern, flip these booleans.
+    pattern:
+      publiclyAccessible: false
+      deletionProtection: true
+
+rds:
+  enabled: true
+  name: example-rds-test-01
+  providerConfigRefName: aws
+  forProvider:
+    allocatedStorage: 20
+    autoMinorVersionUpgrade: true
+    backupRetentionPeriod: 0
+    caCertificateIdentifier: rds-ca-rsa2048-g1
+    dbInstanceClass: db.r5.large
+    deletionProtection: false        # <- deliberately unsafe (to test the policy)
+    enableIAMDatabaseAuthentication: false
+    engine: mysql
+    engineVersion: "8.0.42"
+    masterUsername: admin
+    multiAZ: true
+    port: 3306
+    publiclyAccessible: true         # <- deliberately unsafe (to test the policy)
+    region: us-east-1
+    storageEncrypted: false
+    storageType: gp2

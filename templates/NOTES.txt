@@ -1,0 +1,12 @@
+Thanks for using rds-guard!
+
+This chart installs:
+- Crossplane provider-aws (if enabled)
+- RBAC so Kyverno can watch Crossplane RDSInstances
+- A Kyverno policy to block public RDS or no deletion protection (deny rule by default)
+- A sample RDSInstance (values.rds.*)
+
+To test the policy, keep:
+  rds.forProvider.publiclyAccessible: true
+  rds.forProvider.deletionProtection: false
+and Kyverno should deny the resource (with validationFailureAction=Enforce).

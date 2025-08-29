@@ -1,0 +1,8 @@
+{{- if .Values.providerAws.enabled }}
+apiVersion: pkg.crossplane.io/v1
+kind: Provider
+metadata:
+  name: {{ .Values.providerAws.name }}
+spec:
+  package: {{ .Values.providerAws.package | quote }}
+{{- end }}

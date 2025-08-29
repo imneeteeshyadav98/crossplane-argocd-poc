@@ -1,0 +1,6 @@
+apiVersion: v2
+name: rds-guard
+description: Crossplane RDSInstance with Kyverno guardrails and provider-aws
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
