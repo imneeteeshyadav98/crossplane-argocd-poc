@@ -4,7 +4,7 @@ providerAws:
   package: xpkg.upbound.io/crossplane-contrib/provider-aws:v0.54.2
 
 kyverno:
-  enabled: true
+  enabled: false
   rbac:
     clusterRoleName: kyverno-crossplane-rdsinstance-access
     clusterRoleBindingName: kyverno-crossplane-rdsinstance-access-binding
